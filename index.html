@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Short.io URL Shortener</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .container {
+            background: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        input[type="url"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            background: #e9f7ef;
+            border: 1px solid #d4edda;
+            border-radius: 4px;
+            padding: 15px;
+        }
+        .result a {
+            color: #007bff;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .result a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Short.io URL Shortener</h1>
+        <input type="url" id="inputUrl" placeholder="Enter a URL to shorten" required>
+        <button onclick="shortenUrl()">Shorten URL</button>
+        <div class="result" id="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        async function shortenUrl() {
+            const inputUrl = document.getElementById('inputUrl').value;
+            const resultDiv = document.getElementById('result');
+
+            // Validate the URL
+            if (!inputUrl) {
+                alert("Please enter a valid URL.");
+                return;
+            }
+
+            try {
+                // Making the request to Short.io API
+                const response = await fetch('https://api.short.io/links', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'sk_cq6NhIFObspzYUw1'
+                    },
+                    body: JSON.stringify({
+                        originalURL: inputUrl,
+                        domain: 'short.pro' // You can change this to your custom domain if available
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Display the shortened URL
+                    resultDiv.style.display = 'block';
+                    resultDiv.innerHTML = `
+                        <p>Shortened URL:</p>
+                        <a href="${data.shortURL}" target="_blank">${data.shortURL}</a>
+                    `;
+                } else {
+                    throw new Error(data.message || 'Failed to shorten URL.');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
